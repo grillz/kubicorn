@@ -46,7 +46,6 @@ HOSTNAME=$(hostname -f)
 
 # Audit policy
 cat << EOF > "/etc/kubernetes/audit-policy.yaml"
---audit-log-path=/var/log/kube-audit"
 apiVersion: audit.k8s.io/v1beta1
 kind: Policy
 rules:
@@ -54,7 +53,7 @@ rules:
 EOF
 
 # Audit webhook
-cat <<EOF > "/etc/kubernetes/audit-webhook-kubeconfig"
+cat << EOF > "/etc/kubernetes/audit-webhook-kubeconfig"
 apiVersion: v1
 clusters:
 - cluster:
