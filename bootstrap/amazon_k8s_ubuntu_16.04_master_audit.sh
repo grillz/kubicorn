@@ -53,22 +53,22 @@ rules:
 EOF
 
 # Audit webhook
-cat << EOF > "/etc/kubernetes/audit-webhook-kubeconfig"
-apiVersion: v1
-clusters:
-- cluster:
-    server: http://fluentd-es.heptio-audit.svc.cluster.local:80
-  name: fluentd
-contexts:
-- context:
-    cluster: fluentd
-    user: ""
-  name: default-context
-current-context: default-context
-kind: Config
-preferences: {}
-users: []
-EOF
+# cat << EOF > "/etc/kubernetes/audit-webhook-kubeconfig"
+# apiVersion: v1
+# clusters:
+# - cluster:
+#     server: http://fluentd-es.heptio-audit.svc.cluster.local:80
+#   name: fluentd
+# contexts:
+# - context:
+#     cluster: fluentd
+#     user: ""
+#   name: default-context
+# current-context: default-context
+# kind: Config
+# preferences: {}
+# users: []
+# EOF
 
 # kubeadm init conf
 cat << EOF  > "/etc/kubicorn/kubeadm-config.yaml"
@@ -86,8 +86,9 @@ apiServerCertSANs:
 - ${HOSTNAME}
 - ${PRIVATEIP}
 apiServerExtraArgs:
-  audit-policy-file: /etc/kubernetes/audit-policy.yaml
-  audit-webhook-config-file: /etc/kubernetes/audit-webhook-kubeconfig
+  audit-policy-file: '/etc/kubernetes/audit-policy.yaml'
+  audit-log-path: '-'
+  # audit-webhook-config-file: /etc/kubernetes/audit-webhook-kubeconfig
 authorizationModes:
 - Node
 - RBAC
