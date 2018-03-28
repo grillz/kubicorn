@@ -88,8 +88,8 @@ apiServerCertSANs:
 - ${PUBLICIP}
 - ${HOSTNAME}
 - ${PRIVATEIP}
-# apiServerExtraArgs:
-#   audit-policy-file: '/etc/kubernetes/audit-policy.yaml'
+apiServerExtraArgs:
+  audit-policy-file: /etc/kubernetes/audit-policy.yaml
 #   audit-log-path: '-'
   # audit-webhook-config-file: /etc/kubernetes/audit-webhook-kubeconfig
 authorizationModes:
