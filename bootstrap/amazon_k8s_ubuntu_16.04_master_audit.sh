@@ -44,6 +44,7 @@ PORT=$(cat /etc/kubicorn/cluster.json | jq -r '.clusterAPI.spec.providerConfig' 
 # Necessary for joining a cluster with AWS information
 HOSTNAME=$(hostname -f)
 
+echo "creating audit policy"
 # Audit policy
 cat << EOF > "/etc/kubernetes/audit-policy.yaml"
 apiVersion: audit.k8s.io/v1beta1
@@ -52,7 +53,8 @@ rules:
 - level: Metadata
 EOF
 
-Audit webhook
+echo "creating audit webhook"
+# Audit webhook
 cat << EOF > "/etc/kubernetes/audit-webhook-kubeconfig"
 apiVersion: v1
 clusters:
@@ -70,6 +72,7 @@ preferences: {}
 users: []
 EOF
 
+echo "creating init conf"
 # kubeadm init conf
 cat << EOF  > "/etc/kubicorn/kubeadm-config.yaml"
 apiVersion: kubeadm.k8s.io/v1alpha1
@@ -94,6 +97,7 @@ authorizationModes:
 - RBAC
 EOF
 
+echo "starting server"
 kubeadm reset
 kubeadm init --config /etc/kubicorn/kubeadm-config.yaml
 
