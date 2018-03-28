@@ -47,8 +47,4 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 	}
-	_, err = reconciler.Destroy()
-	if err != nil {
-		panic(err.Error())
-	}
 }
