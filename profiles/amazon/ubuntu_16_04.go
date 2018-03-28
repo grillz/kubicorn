@@ -135,7 +135,7 @@ func NewUbuntuCluster(name string) *cluster.Cluster {
 				Image:    "ami-79873901",
 				Size:     "t2.medium",
 				BootstrapScripts: []string{
-					"bootstrap/amazon_k8s_ubuntu_16.04_node.sh",
+					"https://raw.githubusercontent.com/kubicorn/bootstrap/985d6dc2c42ea3d816f613989482d1b62cd0bcba/amazon_k8s_ubuntu_16.04_node.sh",
 				},
 				InstanceProfile: &cluster.IAMInstanceProfile{
 					Name: fmt.Sprintf("%s-KubicornNodeInstanceProfile", name),
