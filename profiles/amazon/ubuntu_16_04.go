@@ -130,8 +130,8 @@ func NewUbuntuCluster(name string) *cluster.Cluster {
 			ServerPool: &cluster.ServerPool{
 				Type:     cluster.ServerPoolTypeNode,
 				Name:     fmt.Sprintf("%s.node", name),
-				MaxCount: 1,
-				MinCount: 1,
+				MaxCount: 2,
+				MinCount: 2,
 				Image:    "ami-79873901",
 				Size:     "t2.medium",
 				BootstrapScripts: []string{
