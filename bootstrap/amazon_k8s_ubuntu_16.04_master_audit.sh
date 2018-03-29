@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------------------------------------------------
 
 # Specify the Kubernetes version to use
-KUBERNETES_VERSION="1.9.6"
+KUBERNETES_VERSION="1.8.4"
 
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 touch /etc/apt/sources.list.d/kubernetes.list
@@ -45,8 +45,9 @@ PORT=$(cat /etc/kubicorn/cluster.json | jq -r '.clusterAPI.spec.providerConfig' 
 HOSTNAME=$(hostname -f)
 
 echo "creating audit policy"
+mkdir -p /etc/kubernetes/addons
 # Audit policy
-cat << EOF > "/etc/kubernetes/audit-policy.yaml"
+cat << EOF > "/etc/kubernetes/addons/audit-policy.yaml"
 apiVersion: audit.k8s.io/v1beta1
 kind: Policy
 rules:
@@ -55,7 +56,7 @@ EOF
 
 echo "creating audit webhook"
 # Audit webhook
-cat << EOF > "/etc/kubernetes/audit-webhook-kubeconfig"
+cat << EOF > "/etc/kubernetes/addons/audit-webhook-kubeconfig"
 apiVersion: v1
 clusters:
 - cluster:
@@ -90,6 +91,11 @@ apiServerCertSANs:
 - ${PRIVATEIP}
 apiServerExtraArgs:
   audit-log-path: "-"
+  audit-policy-file: /etc/kubernetes/addons/audit-policy.yaml
+apiServerExtraVolumes:
+- name: addons
+  hostPath: /etc/kubernetes/addons
+  mountPath: /etc/kubernetes/addons
 authorizationModes:
 - Node
 - RBAC
@@ -99,16 +105,16 @@ echo "running reset"
 kubeadm reset
 echo "running init"
 kubeadm init --config /etc/kubicorn/kubeadm-config.yaml
-sudo cp /etc/kubernetes/admin.conf $HOME/
-sudo chown $(id -u):$(id -g) $HOME/admin.conf
-export KUBECONFIG=$HOME/admin.conf
+# sudo cp /etc/kubernetes/admin.conf $HOME/
+# sudo chown $(id -u):$(id -g) $HOME/admin.conf
+# export KUBECONFIG=$HOME/admin.conf
 
 echo "applying cni"
-kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+# kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 # Thanks Kelsey :)
-# kubectl apply \
-#   -f http://docs.projectcalico.org/v2.3/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml \
-#   --kubeconfig /etc/kubernetes/admin.conf
+kubectl apply \
+  -f http://docs.projectcalico.org/v2.3/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml \
+  --kubeconfig /etc/kubernetes/admin.conf
 
 kubectl apply \
     -f  https://raw.githubusercontent.com/kubernetes/kubernetes/release-1.8/cluster/addons/storage-class/aws/default.yaml \
