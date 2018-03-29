@@ -99,7 +99,7 @@ apiServerExtraVolumes:
 - name: audit-logs
   hostPath: /var/log/audit
   mountPath: /var/log/audit
-  writeable: true
+  writable: true
 authorizationModes:
 - Node
 - RBAC
