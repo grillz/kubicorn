@@ -75,6 +75,7 @@ EOF
 
 echo "creating init conf"
 # kubeadm init conf
+mkdir -p /var/log/audit
 cat << EOF  > "/etc/kubicorn/kubeadm-config.yaml"
 apiVersion: kubeadm.k8s.io/v1alpha1
 kind: MasterConfiguration
@@ -96,6 +97,10 @@ apiServerExtraVolumes:
 - name: addons
   hostPath: /etc/kubernetes/addons
   mountPath: /etc/kubernetes/addons
+- name: audit-logs
+  hostPath: /var/log/audit
+  mountPath: /var/log/audit
+  writable: true
 authorizationModes:
 - Node
 - RBAC
