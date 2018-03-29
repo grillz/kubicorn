@@ -153,7 +153,7 @@ apiServerCertSANs:
 - ${HOSTNAME}
 - ${PRIVATEIP}
 apiServerExtraArgs:
-  audit-log-path: -
+  audit-log-path: "-"
 authorizationModes:
 - Node
 - RBAC
