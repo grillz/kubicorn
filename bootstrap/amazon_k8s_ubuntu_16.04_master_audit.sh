@@ -56,12 +56,12 @@ EOF
 
 echo "creating audit webhook"
 # Audit webhook
-cat << EOF > "/etc/kubernetes/addons/audit-webhook-kubeconfig"
+cat << EOF > "/etc/kubernetes/addons/audit-webhook.yaml"
 apiVersion: v1
 clusters:
 - cluster:
-    server: http://fluentd-es.heptio-audit.svc.cluster.local:80
-  name: fluentd
+    server: http://localhost:9880
+  name: fluentd 
 contexts:
 - context:
     cluster: fluentd
@@ -90,7 +90,7 @@ apiServerCertSANs:
 - ${HOSTNAME}
 - ${PRIVATEIP}
 apiServerExtraArgs:
-  audit-log-path: "-"
+  audit-webhook-config-file: /etc/kubernetes/addons/audit-webhook.yaml
   audit-policy-file: /etc/kubernetes/addons/audit-policy.yaml
 apiServerExtraVolumes:
 - name: addons
