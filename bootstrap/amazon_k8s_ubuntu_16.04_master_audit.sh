@@ -105,12 +105,8 @@ echo "running reset"
 kubeadm reset
 echo "running init"
 kubeadm init --config /etc/kubicorn/kubeadm-config.yaml
-# sudo cp /etc/kubernetes/admin.conf $HOME/
-# sudo chown $(id -u):$(id -g) $HOME/admin.conf
-# export KUBECONFIG=$HOME/admin.conf
 
 echo "applying cni"
-# kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 # Thanks Kelsey :)
 kubectl apply \
   -f http://docs.projectcalico.org/v2.3/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml \
