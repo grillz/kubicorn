@@ -96,10 +96,6 @@ apiServerExtraVolumes:
 - name: addons
   hostPath: /etc/kubernetes/addons
   mountPath: /etc/kubernetes/addons
-- name: audit-logs
-  hostPath: /var/log/audit
-  mountPath: /var/log/audit
-  writable: true
 authorizationModes:
 - Node
 - RBAC
