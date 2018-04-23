@@ -60,11 +60,11 @@ cat << EOF > "/etc/kubernetes/addons/audit-webhook.yaml"
 apiVersion: v1
 clusters:
 - cluster:
-    server: http://localhost:9880
-  name: fluentd 
+    server: http://localhost:9742
+  name: proxy 
 contexts:
 - context:
-    cluster: fluentd
+    cluster: proxy
     user: ""
   name: default-context
 current-context: default-context
