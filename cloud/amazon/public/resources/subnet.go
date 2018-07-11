@@ -23,6 +23,7 @@ import (
 	"github.com/kubicorn/kubicorn/cloud"
 	"github.com/kubicorn/kubicorn/pkg/compare"
 	"github.com/kubicorn/kubicorn/pkg/logger"
+	"github.com/kubicorn/kubicorn/pkg/retry"
 )
 
 var _ cloud.Resource = &Subnet{}
@@ -248,12 +249,10 @@ func (r *Subnet) tag(tags map[string]string) error {
 			Value: S("%s", val),
 		})
 	}
-	req, _ := Sdk.Ec2.CreateTagsRequest(tagInput)
-	retry := true
-	req.Retryable = &retry
-	req.RetryCount = 30
-	req.RetryDelay = 2 * time.Second
-	err := req.Send()
+	err := retry.Retry(30, 2*time.Second, func() error {
+		_, err := Sdk.Ec2.CreateTags(tagInput)
+		return err
+	})
 	if err != nil {
 		return err
 	}

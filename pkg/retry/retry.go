@@ -82,3 +82,22 @@ func (r *Retrier) RunRetry() error {
 	finish <- true
 	return fmt.Errorf("unable to succeed at retry after %d attempts at %d seconds", r.retries, r.sleepSeconds)
 }
+
+// Retry retries a given funcion for the number of attempts, sleeping in between
+func Retry(attempts int, sleep time.Duration, callback func() error) (err error) {
+	for i := 0; ; i++ {
+		err = callback()
+		if err == nil {
+			return
+		}
+
+		if i >= (attempts - 1) {
+			break
+		}
+
+		time.Sleep(sleep)
+
+		logger.Debug("retrying after error:", err)
+	}
+	return fmt.Errorf("after %d attempts, last error: %s", attempts, err)
+}
