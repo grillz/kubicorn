@@ -134,6 +134,7 @@ func (r *RouteTable) Apply(actual, expected cloud.Resource, immutable *cluster.C
 		GatewayId:            ig.InternetGatewayId,
 		RouteTableId:         rtOutput.RouteTable.RouteTableId,
 	}
+
 	_, err = Sdk.Ec2.CreateRoute(riInput)
 	if err != nil {
 		return nil, nil, err
@@ -158,6 +159,7 @@ func (r *RouteTable) Apply(actual, expected cloud.Resource, immutable *cluster.C
 		SubnetId:     &subnetID,
 		RouteTableId: rtOutput.RouteTable.RouteTableId,
 	}
+
 	_, err = Sdk.Ec2.AssociateRouteTable(asInput)
 	if err != nil {
 		return nil, nil, err

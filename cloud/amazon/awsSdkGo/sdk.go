@@ -22,6 +22,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/kubicorn/kubicorn/pkg/retry"
 )
 
 type Sdk struct {
@@ -34,7 +35,10 @@ type Sdk struct {
 func NewSdk(region string, profile string) (*Sdk, error) {
 	sdk := &Sdk{}
 	session, err := session.NewSessionWithOptions(session.Options{
-		Config: aws.Config{Region: aws.String(region)},
+		Config: aws.Config{
+			Region:  aws.String(region),
+			Retryer: retry.AWSRetryer{NumMaxRetries: 15},
+		},
 		// Support MFA when authing using assumed roles.
 		SharedConfigState:       session.SharedConfigEnable,
 		AssumeRoleTokenProvider: stscreds.StdinTokenProvider,

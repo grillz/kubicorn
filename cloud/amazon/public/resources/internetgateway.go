@@ -106,10 +106,12 @@ func (r *InternetGateway) Apply(actual, expected cloud.Resource, immutable *clus
 		InternetGatewayId: ig.InternetGatewayId,
 		VpcId:             &immutable.ProviderConfig().Network.Identifier,
 	}
+
 	_, err = Sdk.Ec2.AttachInternetGateway(atchinput)
 	if err != nil {
 		return nil, nil, err
 	}
+
 	logger.Info("Attaching Internet Gateway [%s] to VPC [%s]", *ig.InternetGatewayId, immutable.ProviderConfig().Network.Identifier)
 	newResource := &InternetGateway{
 		Shared: Shared{
