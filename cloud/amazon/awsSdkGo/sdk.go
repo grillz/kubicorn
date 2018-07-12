@@ -37,7 +37,7 @@ func NewSdk(region string, profile string) (*Sdk, error) {
 	session, err := session.NewSessionWithOptions(session.Options{
 		Config: aws.Config{
 			Region:  aws.String(region),
-			Retryer: retry.AWSRetryer{NumMaxRetries: 15},
+			Retryer: retry.AWSRetryer{NumMaxRetries: 100},
 		},
 		// Support MFA when authing using assumed roles.
 		SharedConfigState:       session.SharedConfigEnable,
