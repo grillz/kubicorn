@@ -16,12 +16,14 @@ package resources
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/kubicorn/kubicorn/apis/cluster"
 	"github.com/kubicorn/kubicorn/cloud"
 	"github.com/kubicorn/kubicorn/pkg/compare"
 	"github.com/kubicorn/kubicorn/pkg/logger"
+	"github.com/kubicorn/kubicorn/pkg/retry"
 )
 
 var _ cloud.Resource = &RouteTable{}
@@ -135,7 +137,10 @@ func (r *RouteTable) Apply(actual, expected cloud.Resource, immutable *cluster.C
 		RouteTableId:         rtOutput.RouteTable.RouteTableId,
 	}
 
-	_, err = Sdk.Ec2.CreateRoute(riInput)
+	err = retry.Retry(30, 2*time.Second, func() error {
+		_, err = Sdk.Ec2.CreateRoute(riInput)
+		return err
+	})
 	if err != nil {
 		return nil, nil, err
 	}
@@ -160,13 +165,19 @@ func (r *RouteTable) Apply(actual, expected cloud.Resource, immutable *cluster.C
 		RouteTableId: rtOutput.RouteTable.RouteTableId,
 	}
 
-	_, err = Sdk.Ec2.AssociateRouteTable(asInput)
+	err = retry.Retry(30, 2*time.Second, func() error {
+		_, err = Sdk.Ec2.AssociateRouteTable(asInput)
+		return err
+	})
 	if err != nil {
 		return nil, nil, err
 	}
 
 	expected.(*RouteTable).Identifier = *rtOutput.RouteTable.RouteTableId
-	err = expected.(*RouteTable).tag(expected.(*RouteTable).Tags)
+	err = retry.Retry(30, 2*time.Second, func() error {
+		err = expected.(*RouteTable).tag(expected.(*RouteTable).Tags)
+		return err
+	})
 	if err != nil {
 		return nil, nil, err
 	}

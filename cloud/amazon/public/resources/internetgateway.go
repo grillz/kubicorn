@@ -16,12 +16,14 @@ package resources
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/kubicorn/kubicorn/apis/cluster"
 	"github.com/kubicorn/kubicorn/cloud"
 	"github.com/kubicorn/kubicorn/pkg/compare"
 	"github.com/kubicorn/kubicorn/pkg/logger"
+	"github.com/kubicorn/kubicorn/pkg/retry"
 )
 
 var _ cloud.Resource = &InternetGateway{}
@@ -107,7 +109,10 @@ func (r *InternetGateway) Apply(actual, expected cloud.Resource, immutable *clus
 		VpcId:             &immutable.ProviderConfig().Network.Identifier,
 	}
 
-	_, err = Sdk.Ec2.AttachInternetGateway(atchinput)
+	err = retry.Retry(30, 2*time.Second, func() error {
+		_, err = Sdk.Ec2.AttachInternetGateway(atchinput)
+		return err
+	})
 	if err != nil {
 		return nil, nil, err
 	}
@@ -124,7 +129,9 @@ func (r *InternetGateway) Apply(actual, expected cloud.Resource, immutable *clus
 		newResource.Tags[key] = value
 	}
 	expected.(*InternetGateway).Identifier = *output.InternetGateway.InternetGatewayId
-	err = expected.(*InternetGateway).tag(expected.(*InternetGateway).Tags)
+	err = retry.Retry(30, 2*time.Second, func() error {
+		return expected.(*InternetGateway).tag(expected.(*InternetGateway).Tags)
+	})
 	if err != nil {
 		return nil, nil, err
 	}
